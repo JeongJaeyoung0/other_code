@@ -1,0 +1,398 @@
+<!-- 대전시민천문대 관람동선 추천 -->
+<!--
+0분 이상, 24분 미만일 경우 전시실 > 관측실 > 투영관 추천
+24분 이상, 35분 미만일 경우 관측실 > 전시실 > 투영관 추천
+35분 이상, 45분 미만일 경우 관측실 > 전시실 > 투영관 추천
+45분 이상, 55분 미만일 경우 전시실 > 투영관 > 관측실 추천
+55분 이상, 0분 미만일 경우 투영관 > 관측실 > 전시실 추천
+단, 2시 24분 이전일 경우 전시실 > 관측실(2:25) > 투영관(3:00) 추천
+단, 4시 44분 이상, 5시 미만일 경우 전시실 > 투영관 > 관측실(6:25) 추천
+단, 5시 이상, 6시 미만일 경우 전시실 > 관측실(6:25) > 투영관(7:00) 추천
+단, 9시 24분 미만일 경우 전시실 > 관측실 추천
+단, 9시 24분 이상, 45분 미만일 경우 관측실 > 전시실 추천
+단, 9시 45분 이상일 경우 전시실 추천
+-->
+
+<!DOCTYPE html>
+
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+        font-size: 60px;
+    }
+
+    body {
+        background-color: black;
+        color: white;
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+        min-height: 100vh;
+        text-align: center;
+
+    }
+
+    div.left {
+        width: 50%;
+        float: left;
+        box-sizing: border-box;
+    }
+
+    div.right {
+        width: 50%;
+        float: right;
+        box-sizing: border-box;
+    }
+
+    .way>div {
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+
+    .container {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+    .date {
+        color: white;
+    }
+
+    .time {
+        font-weight: bold;
+        color: yellow;
+    }
+
+    .way-time {
+        font-size: 32px;
+    }
+</style>
+
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <div class="container">
+        <div class="left">
+            <div id="date" class="date"></div>
+            <div id="time" class="time"></div>
+            <div style="padding-top: 60px; padding-bottom: 60px;">관람 동선 <span style="color: yellow;">추천</span></div>
+            <div class="way">
+                <p id="first"></p>
+                <p id="first-time" class="way-time"></p>
+                <div id="first_arrow">&#8681;</div>
+                <p id="second"></p>
+                <p id="second-time" class="way-time"></p>
+                <div id="second_arrow">&#8681;</div>
+                <p id="third"></p>
+                <p id="third-time" class="way-time"></p>
+            </div>
+        </div>
+        <div class="right">
+            <div id="date_en" class="date"></div>
+            <div id="time_en" class="time"></div>
+            <div style="padding-top: 60px; padding-bottom: 60px;"><span style="color: yellow;">Recommendation</span> of the tour route</div>
+            <div class="way">
+                <p id="first_en"></p>
+                <p id="first-time_en" class="way-time"></p>
+                <div id="first_arrow_en">&#8681;</div>
+                <p id="second_en"></p>
+                <p id="second-time_en" class="way-time"></p>
+                <div id="second_arrow_en">&#8681;</div>
+                <p id="third_en"></p>
+                <p id="third-time_en" class="way-time"></p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+    var f1 = "1층 투영관";;
+    //var f1_time = (hour + 1) + ":00 입장 마감";
+    var f1_time_1900 = "7:00 입장 마감";
+    var f1_time_1500 = "3:00 입장 마감";
+    var f2 = "2층 전시실";;
+    var f2_time = "상시 관람 / 데스크에서 리플렛 받아가세요.";;
+    var f3 = "3층 관측실";;
+    //var f3_time = (hour) + ":25 입장 / " + (hour) + ":45 입장 마감";
+    //var f3_time_plus1 = (hour + 1) + ":25 입장 / " + (hour + 1) + ":45 입장 마감";
+    var f3_time_1525 = "2:25 입장 / 2:45 입장 마감";
+    var f3_time_1825 = "6:25 입장 / 6:45 입장 마감";
+
+    var f1_en = "1st floor planetarium";;
+    //var f1_time_en = "Close " + (hour + 1) + ":00";
+    var f1_time_1900_en = "you need to enter until 7 o’clock";
+    var f1_time_1500_en = "you need to enter until 3 o’clock";
+    var f2_en = "2nd floor exhibition";;
+    var f2_time_en = "Always on view / Pick up a leaflet at the desk.";;
+    var f3_en = "3rd floor observation";;
+    //var f3_time_en = "Open " + (hour) + ":25 / Close " + (hour) + ":45";
+    //var f3_time_plus1_en = "Open" + (hour + 1) + ":25 / Close " + (hour + 1) + ":45";
+    var f3_time_1525_en = "Open at 2:25 / Close at 2:45";
+    var f3_time_1825_en = "Open at 6:25 / Close at 6:45";
+
+    function setClock() {
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        var weekNames = ["일", "월", "화", "수", "목", "금", "토"];
+        var weekNames_en = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        var week = weekNames[date.getDay()];
+        var hour = modifyNumber(date.getHours());
+        var min = modifyNumber(date.getMinutes());
+        var sec = modifyNumber(date.getSeconds());
+        var am_pm = "";
+        var am_pm_en = "";
+
+        if (hour < 13) {
+            am_pm = "오전";
+            am_pm_en = "Am";
+        }
+        else {
+            am_pm = "오후";
+            am_pm_en = "Pm";
+            hour = hour - 12;
+        }
+
+        // 테스트
+         hour = 2;
+        // min = 0;
+
+        var f1_time = (hour + 1) + ":00 입장 마감";
+        var f3_time = (hour) + ":25 입장 / " + (hour) + ":45 입장 마감";
+        var f3_time_plus1 = (hour + 1) + ":25 입장 / " + (hour + 1) + ":45 입장 마감";
+
+        var f1_time_en = "you need to enter until " + (hour + 1) + " o’clock";
+        var f3_time_en = "Open at " + (hour) + ":25 / Close at " + (hour) + ":45";
+        var f3_time_plus1_en = "Open at " + (hour + 1) + ":25 / Close at " + (hour + 1) + ":45";
+
+        document.getElementById("date").innerHTML = year + "/" + month + "/" + day + " " + week + "요일";
+        document.getElementById("time").innerHTML = am_pm + " " + hour + ":" + min + ":" + sec;
+
+        document.getElementById("date_en").innerHTML = year + "/" + month + "/" + day + " " + week;
+        document.getElementById("time_en").innerHTML = am_pm_en + " " + hour + ":" + min + ":" + sec;
+
+        document.getElementById("first_arrow").style.display = 'block';
+        document.getElementById("first_arrow_en").style.display = 'block';
+        document.getElementById("second_arrow").style.display = 'block';
+        document.getElementById("second_arrow_en").style.display = 'block';
+
+        // 2시 24분 이전일 경우
+        if (hour <= 2 || hour == 2 && min < 24) {
+            // 전시실 > 관측실 > 투영관 추천
+            document.getElementById("first").innerHTML = f2;
+            document.getElementById("first-time").innerHTML = f2_time;
+            document.getElementById("second").innerHTML = f3;
+            document.getElementById("second-time").innerHTML = f3_time_1525;
+            document.getElementById("third").innerHTML = f1;
+            document.getElementById("third-time").innerHTML = f1_time_1500;
+
+            document.getElementById("first_en").innerHTML = f2_en;
+            document.getElementById("first-time_en").innerHTML = f2_time_en;
+            document.getElementById("second_en").innerHTML = f3_en;
+            document.getElementById("second-time_en").innerHTML = f3_time_1525_en;
+            document.getElementById("third_en").innerHTML = f1_en;
+            document.getElementById("third-time_en").innerHTML = f1_time_1500_en;
+        }
+        // 4시 44분 이후일 경우
+        else if (hour == 4 && min >= 44) {
+            // 전시실 > 투영관 > 관측실 추천
+            document.getElementById("first").innerHTML = f2;
+            document.getElementById("first-time").innerHTML = f2_time;
+            document.getElementById("second").innerHTML = f1;
+            document.getElementById("second-time").innerHTML = f1_time;
+            document.getElementById("third").innerHTML = f3;
+            document.getElementById("third-time").innerHTML = f3_time_1825;
+
+            document.getElementById("first_en").innerHTML = f2_en;
+            document.getElementById("first-time_en").innerHTML = f2_time_en;
+            document.getElementById("second_en").innerHTML = f1_en;
+            document.getElementById("second-time_en").innerHTML = f1_time_en;
+            document.getElementById("third_en").innerHTML = f3_en;
+            document.getElementById("third-time_en").innerHTML = f3_time_1825_en;
+        }
+        // 5시 이후일 경우
+        else if (hour == 5) {
+            // 전시실 > 관측실 > 투영관 추천
+            document.getElementById("first").innerHTML = f2;
+            document.getElementById("first-time").innerHTML = f2_time;
+            document.getElementById("second").innerHTML = f3;
+            document.getElementById("second-time").innerHTML = f3_time_1825;
+            document.getElementById("third").innerHTML = f1;
+            document.getElementById("third-time").innerHTML = f1_time_1900;
+
+            document.getElementById("first_en").innerHTML = f2_en;
+            document.getElementById("first-time_en").innerHTML = f2_time_en;
+            document.getElementById("second_en").innerHTML = f3_en;
+            document.getElementById("second-time_en").innerHTML = f3_time_1825_en;
+            document.getElementById("third_en").innerHTML = f1_en;
+            document.getElementById("third-time_en").innerHTML = f1_time_1900_en;
+        }
+        // 9시 24분 미만일 경우
+        else if (hour == 9 && min < 24) {
+            // 전시실 > 관측실 추천
+            document.getElementById("first").innerHTML = f2;
+            document.getElementById("first-time").innerHTML = f2_time;
+            document.getElementById("second").innerHTML = f3;
+            document.getElementById("second-time").innerHTML = f3_time;
+            document.getElementById("third").innerHTML = "";
+            document.getElementById("third-time").innerHTML = "";
+
+            document.getElementById("first_en").innerHTML = f2_en;
+            document.getElementById("first-time_en").innerHTML = f2_time_en;
+            document.getElementById("second_en").innerHTML = f3_en;
+            document.getElementById("second-time_en").innerHTML = f3_time_en;
+            document.getElementById("third_en").innerHTML = "";
+            document.getElementById("third-time_en").innerHTML = "";
+
+            document.getElementById("second_arrow").style.display = 'none';
+            document.getElementById("second_arrow_en").style.display = 'none';
+        }
+        // 9시 24분 이상, 45분 미만일 경우
+        else if (hour == 9 && min >= 24 && min < 45) {
+            // 관측실 > 전시실 추천
+            document.getElementById("first").innerHTML = f3;
+            document.getElementById("first-time").innerHTML = f3_time;
+            document.getElementById("second").innerHTML = f2;
+            document.getElementById("second-time").innerHTML = f2_time;
+            document.getElementById("third").innerHTML = "";
+            document.getElementById("third-time").innerHTML = "";
+
+            document.getElementById("first_en").innerHTML = f3_en;
+            document.getElementById("first-time_en").innerHTML = f3_time_en;
+            document.getElementById("second_en").innerHTML = f2_en;
+            document.getElementById("second-time_en").innerHTML = f2_time_en;
+            document.getElementById("third_en").innerHTML = "";
+            document.getElementById("third-time_en").innerHTML = "";
+
+            document.getElementById("second_arrow").style.display = 'none';
+            document.getElementById("second_arrow_en").style.display = 'none';
+        }
+        // 9시 45분 이상일 경우
+        else if (hour >= 9) {
+            // 전시실 추천
+            document.getElementById("first").innerHTML = f2;
+            document.getElementById("first-time").innerHTML = f2_time;
+            document.getElementById("second").innerHTML = "";
+            document.getElementById("second-time").innerHTML = "";
+            document.getElementById("third").innerHTML = "";
+            document.getElementById("third-time").innerHTML = "";
+
+            document.getElementById("first_en").innerHTML = f2_en;
+            document.getElementById("first-time_en").innerHTML = f2_time_en;
+            document.getElementById("second_en").innerHTML = "";
+            document.getElementById("second-time_en").innerHTML = "";
+            document.getElementById("third_en").innerHTML = "";
+            document.getElementById("third-time_en").innerHTML = "";
+
+            document.getElementById("first_arrow").style.display = 'none';
+            document.getElementById("first_arrow_en").style.display = 'none';
+            document.getElementById("second_arrow").style.display = 'none';
+            document.getElementById("second_arrow_en").style.display = 'none';
+        }
+        // 그외 시간일 경우
+        else {
+            // 0분 이상, 24분 미만일 경우 전시실 > 관측실 > 투영관 추천
+            if (min >= 0 && min < 24) {
+                document.getElementById("first").innerHTML = f2;
+                document.getElementById("first-time").innerHTML = f2_time;
+                document.getElementById("second").innerHTML = f3;
+                document.getElementById("second-time").innerHTML = f3_time;
+                document.getElementById("third").innerHTML = f1;
+                document.getElementById("third-time").innerHTML = f1_time;
+
+                document.getElementById("first_en").innerHTML = f2_en;
+                document.getElementById("first-time_en").innerHTML = f2_time_en;
+                document.getElementById("second_en").innerHTML = f3_en;
+                document.getElementById("second-time_en").innerHTML = f3_time_en;
+                document.getElementById("third_en").innerHTML = f1_en;
+                document.getElementById("third-time_en").innerHTML = f1_time_en;
+            }
+            // 24분 이상, 35분 미만일 경우 관측실 > 전시실 > 투영관 추천
+            else if (min >= 24 && min < 35) {
+                document.getElementById("first").innerHTML = f3;
+                document.getElementById("first-time").innerHTML = f3_time;
+                document.getElementById("second").innerHTML = f2;
+                document.getElementById("second-time").innerHTML = f2_time;
+                document.getElementById("third").innerHTML = f1;
+                document.getElementById("third-time").innerHTML = f1_time;
+
+                document.getElementById("first_en").innerHTML = f3_en;
+                document.getElementById("first-time_en").innerHTML = f3_time_en;
+                document.getElementById("second_en").innerHTML = f2_en;
+                document.getElementById("second-time_en").innerHTML = f2_time_en;
+                document.getElementById("third_en").innerHTML = f1_en;
+                document.getElementById("third-time_en").innerHTML = f1_time_en;
+            }
+            // 35분 이상, 45분 미만일 경우 관측실 > 전시실 > 투영관 추천
+            else if (min >= 35 && min < 45) {
+                document.getElementById("first").innerHTML = f3;
+                document.getElementById("first-time").innerHTML = f3_time;
+                document.getElementById("second").innerHTML = f1;
+                document.getElementById("second-time").innerHTML = f1_time;
+                document.getElementById("third").innerHTML = f2;
+                document.getElementById("third-time").innerHTML = f2_time;
+
+                document.getElementById("first_en").innerHTML = f3_en;
+                document.getElementById("first-time_en").innerHTML = f3_time_en;
+                document.getElementById("second_en").innerHTML = f1_en;
+                document.getElementById("second-time_en").innerHTML = f1_time_en;
+                document.getElementById("third_en").innerHTML = f2_en;
+                document.getElementById("third-time_en").innerHTML = f2_time_en;
+            }
+            // 45분 이상, 55분 미만일 경우 전시실 > 투영관 > 관측실 추천
+            else if (min >= 45 && min < 55) {
+                document.getElementById("first").innerHTML = f2;
+                document.getElementById("first-time").innerHTML = f2_time;
+                document.getElementById("second").innerHTML = f1;
+                document.getElementById("second-time").innerHTML = f1_time;
+                document.getElementById("third").innerHTML = f3;
+                document.getElementById("third-time").innerHTML = f3_time_plus1;
+
+                document.getElementById("first_en").innerHTML = f2_en;
+                document.getElementById("first-time_en").innerHTML = f2_time_en;
+                document.getElementById("second_en").innerHTML = f1_en;
+                document.getElementById("second-time_en").innerHTML = f1_time_en;
+                document.getElementById("third_en").innerHTML = f3_en;
+                document.getElementById("third-time_en").innerHTML = f3_time_plus1_en;
+            }
+            // 55분 이상, 0분 미만일 경우 투영관 > 관측실 > 전시실 추천
+            else {
+                document.getElementById("first").innerHTML = f1;
+                document.getElementById("first-time").innerHTML = f1_time;
+                document.getElementById("second").innerHTML = f3;
+                document.getElementById("second-time").innerHTML = f3_time_plus1;
+                document.getElementById("third").innerHTML = f2;
+                document.getElementById("third-time").innerHTML = f2_time;
+
+                document.getElementById("first_en").innerHTML = f1_en;
+                document.getElementById("first-time_en").innerHTML = f1_time_en;
+                document.getElementById("second_en").innerHTML = f3_en;
+                document.getElementById("second-time_en").innerHTML = f3_time_plus1_en;
+                document.getElementById("third_en").innerHTML = f2_en;
+                document.getElementById("third-time_en").innerHTML = f2_time_en;
+            }
+        }
+
+    }
+
+    function modifyNumber(time) {
+        if (parseInt(time) < 10) {
+            return "0" + time;
+        }
+        else
+            return time;
+    }
+
+    window.onload = function () {
+        setClock();
+        setInterval(setClock, 1000); //1초마다 setClock 함수 실행
+    }
+</script>
