@@ -1,12 +1,14 @@
 <!-- 대전시민천문대 관람동선 추천 -->
 <!--
-57분 이상, 24분 미만일 경우 전시실 > 관측실 > 투영관 추천
+0분 이상, 24분 미만일 경우 전시실 > 관측실 > 투영관 추천
 24분 이상, 45분 미만일 경우 관측실 > 전시실 > 투영관 추천
-45분 이상, 53분 미만일 경우 전시실 > 투영관 > 관측실 추천
-53분 이상, 57분 미만일 경우 투영관 > 관측실 > 전시실 추천
+45분 이상, 52분 미만일 경우 전시실 > 투영관 > 관측실 추천
+52분 이상, 57분 미만일 경우 투영관 > 관측실 > 전시실 추천
+57분 이상, 0분 미만일 경우 전시실 > 관측실 > 투영관 추천
 단, 2시 24분 미만일 경우 전시실 > 관측실(2:25) > 투영관(3:00) 추천
-단, 4시 44분 이상, 5시 미만일 경우 전시실 > 투영관 > 관측실(6:25) 추천
-단, 5시 이상, 6시 미만일 경우 전시실 > 관측실(6:25) > 투영관(7:00) 추천
+단, 4시 45분 이상, 4시 52분 미만일 경우 전시실 > 투영관 > 관측실(6:25) 추천
+단, 4시 52분 이상, 4시 57분 미만일 경우 투영관 > 전시실 > 관측실(6:25) 추천
+단, 4시 57분 이후 또는 5시 0분 ~ 5시 59분일 경우 전시실 > 관측실(6:25) > 투영관(7:00) 추천
 단, 9시 24분 미만일 경우 전시실 > 관측실 추천
 단, 9시 24분 이상, 45분 미만일 경우 관측실 > 전시실 추천
 단, 9시 45분 이상일 경우 전시실 추천
@@ -142,29 +144,29 @@
         var hour = modifyNumber(date.getHours());
         var min = modifyNumber(date.getMinutes());
         var sec = modifyNumber(date.getSeconds());
-        var am_pm = "";
-        var am_pm_en = "";
 
         // 오전, 오후 구분
         if (hour < 13) {
-            am_pm = "오전";
-            am_pm_en = "am";
+            var am_pm = "오전";
+            var am_pm_en = "am";
         }
         else {
-            am_pm = "오후";
-            am_pm_en = "pm";
+            var am_pm = "오후";
+            var am_pm_en = "pm";
             hour = hour - 12;
         }
 
         // 테스트
-        // hour = 2;
-        // min = 0;
+        // hour = 9;
+        // min = 45;
 
         var f1_time = (hour) + ":57 입장 마감 / " + (hour + 1) + ":00 상영 시작 / 만 5세 이상";
+        var f1_time_plus1 = (hour + 1) + ":57 입장 마감 / " + (hour + 2) + ":00 상영 시작 / 만 5세 이상";
         var f3_time = (hour) + ":25 입장 시작 / " + (hour) + ":45 입장 마감";
         var f3_time_plus1 = (hour + 1) + ":25 입장 시작 / " + (hour + 1) + ":45 입장 마감";
 
         var f1_time_en = "Last admission at " + (hour) + ":57  / Screening starts at " + (hour + 1) + ":00 / 5 years and older";
+        var f1_time_plus1_en = "Last admission at " + (hour + 1) + ":57  / Screening starts at " + (hour + 2) + ":00 / 5 years and older";
         var f3_time_en = "Admission time at " + (hour) + ":25 / Last admission at " + (hour) + ":45";
         var f3_time_plus1_en = "Admission time at " + (hour + 1) + ":25 / Last admission at " + (hour + 1) + ":45";
 
@@ -179,9 +181,8 @@
         document.getElementById("second_route_arrow").style.display = 'block';
         document.getElementById("second_route_arrow_en").style.display = 'block';
 
-        // 2시 24분 미만일 경우
-        if (am_pm == "오전" || hour <= 2 || hour == 2 && min < 24) {
-            // 전시실 > 관측실 > 투영관 추천
+        // 2시 24분 미만일 경우 전시실 > 관측실(2:25) > 투영관(3:00) 추천
+        if (am_pm == "오전" || hour <= 1 || hour == 2 && min < 24) {
             document.getElementById("first_route").innerHTML = f2;
             document.getElementById("first_route_sub").innerHTML = f2_time;
             document.getElementById("second_route").innerHTML = f3;
@@ -196,9 +197,8 @@
             document.getElementById("third_route_en").innerHTML = f1_en;
             document.getElementById("third_route_sub_en").innerHTML = f1_time_1500_en;
         }
-        // 4시 44분 이후일 경우
-        else if (hour == 4 && min >= 44) {
-            // 전시실 > 투영관 > 관측실 추천
+        // 4시 45분 이상, 4시 52분 미만일 경우 전시실 > 투영관 > 관측실(6:25) 추천
+        else if (hour == 4 && min >= 45 && min < 52) {
             document.getElementById("first_route").innerHTML = f2;
             document.getElementById("first_route_sub").innerHTML = f2_time;
             document.getElementById("second_route").innerHTML = f1;
@@ -213,9 +213,24 @@
             document.getElementById("third_route_en").innerHTML = f3_en;
             document.getElementById("third_route_sub_en").innerHTML = f3_time_1825_en;
         }
-        // 5시일 경우
-        else if (hour == 5) {
-            // 전시실 > 관측실 > 투영관 추천
+        // 4시 52분 이상, 4시 57분 미만일 경우 투영관 > 전시실 > 관측실(6:25) 추천
+        else if (hour == 4 && min >= 52 && min < 57) {
+            document.getElementById("first_route").innerHTML = f1;
+            document.getElementById("first_route_sub").innerHTML = f1_time;
+            document.getElementById("second_route").innerHTML = f2;
+            document.getElementById("second_route_sub").innerHTML = f2_time;
+            document.getElementById("third_route").innerHTML = f3;
+            document.getElementById("third_route_sub").innerHTML = f3_time_1825;
+
+            document.getElementById("first_en").innerHTML = f1_en;
+            document.getElementById("first_route_sub_en").innerHTML = f1_time_en;
+            document.getElementById("second_route_en").innerHTML = f2_en;
+            document.getElementById("second_route_sub_en").innerHTML = f2_time_en;
+            document.getElementById("third_route_en").innerHTML = f3_en;
+            document.getElementById("third_route_sub_en").innerHTML = f3_time_1825_en;
+        }
+        // 4시 57분 이후 또는 5시 0분 ~ 5시 59분일 경우 전시실 > 관측실(6:25) > 투영관(7:00) 추천
+        else if (hour == 4 && min >= 57 ||hour == 5) {
             document.getElementById("first_route").innerHTML = f2;
             document.getElementById("first_route_sub").innerHTML = f2_time;
             document.getElementById("second_route").innerHTML = f3;
@@ -230,9 +245,8 @@
             document.getElementById("third_route_en").innerHTML = f1_en;
             document.getElementById("third_route_sub_en").innerHTML = f1_time_1900_en;
         }
-        // 9시 24분 미만일 경우
+        // 9시 24분 미만일 경우 전시실 > 관측실 추천
         else if (hour == 9 && min < 24) {
-            // 전시실 > 관측실 추천
             document.getElementById("first_route").innerHTML = f2;
             document.getElementById("first_route_sub").innerHTML = f2_time;
             document.getElementById("second_route").innerHTML = f3;
@@ -250,9 +264,8 @@
             document.getElementById("second_route_arrow").style.display = 'none';
             document.getElementById("second_route_arrow_en").style.display = 'none';
         }
-        // 9시 24분 이상, 45분 미만일 경우
+        // 9시 24분 이상, 45분 미만일 경우 관측실 > 전시실 추천
         else if (hour == 9 && min >= 24 && min < 45) {
-            // 관측실 > 전시실 추천
             document.getElementById("first_route").innerHTML = f3;
             document.getElementById("first_route_sub").innerHTML = f3_time;
             document.getElementById("second_route").innerHTML = f2;
@@ -270,9 +283,8 @@
             document.getElementById("second_route_arrow").style.display = 'none';
             document.getElementById("second_route_arrow_en").style.display = 'none';
         }
-        // 9시 45분 이상일 경우
+        // 9시 45분 이상일 경우 전시실 추천
         else if (hour >= 9) {
-            // 전시실 추천
             document.getElementById("first_route").innerHTML = f2;
             document.getElementById("first_route_sub").innerHTML = f2_time;
             document.getElementById("second_route").innerHTML = "";
@@ -294,8 +306,8 @@
         }
         // 그외 시간일 경우
         else {
-            // 57분 이상, 24분 미만일 경우 전시실 > 관측실 > 투영관 추천
-            if (min >= 57 || min < 24) {
+            // 0분 이상, 24분 미만일 경우 전시실 > 관측실 > 투영관 추천
+            if (min >= 0 && min < 24) {
                 document.getElementById("first_route").innerHTML = f2;
                 document.getElementById("first_route_sub").innerHTML = f2_time;
                 document.getElementById("second_route").innerHTML = f3;
@@ -326,8 +338,8 @@
                 document.getElementById("third_route_en").innerHTML = f1_en;
                 document.getElementById("third_route_sub_en").innerHTML = f1_time_en;
             }
-            // 45분 이상, 53분 미만일 경우 전시실 > 투영관 > 관측실 추천
-            else if (min >= 45 && min < 53) {
+            // 45분 이상, 52분 미만일 경우 전시실 > 투영관 > 관측실 추천
+            else if (min >= 45 && min < 52) {
                 document.getElementById("first_route").innerHTML = f2;
                 document.getElementById("first_route_sub").innerHTML = f2_time;
                 document.getElementById("second_route").innerHTML = f1;
@@ -342,8 +354,8 @@
                 document.getElementById("third_route_en").innerHTML = f3_en;
                 document.getElementById("third_route_sub_en").innerHTML = f3_time_plus1_en;
             }
-            // 53분 이상, 0분 미만일 경우 투영관 > 관측실 > 전시실 추천
-            else {
+            // 52분 이상, 57분 미만일 경우 투영관 > 관측실 > 전시실 추천
+            else if (min >= 52 && min < 57) {
                 document.getElementById("first_route").innerHTML = f1;
                 document.getElementById("first_route_sub").innerHTML = f1_time;
                 document.getElementById("second_route").innerHTML = f3;
@@ -358,8 +370,23 @@
                 document.getElementById("third_route_en").innerHTML = f2_en;
                 document.getElementById("third_route_sub_en").innerHTML = f2_time_en;
             }
-        }
+            // 57분 이상, 0분 미만일 경우 전시실 > 관측실 > 투영관 추천
+            else {
+                document.getElementById("first_route").innerHTML = f2;
+                document.getElementById("first_route_sub").innerHTML = f2_time;
+                document.getElementById("second_route").innerHTML = f3;
+                document.getElementById("second_route_sub").innerHTML = f3_time_plus1;
+                document.getElementById("third_route").innerHTML = f1;
+                document.getElementById("third_route_sub").innerHTML = f1_time_plus1;
 
+                document.getElementById("first_en").innerHTML = f2_en;
+                document.getElementById("first_route_sub_en").innerHTML = f2_time_en;
+                document.getElementById("second_route_en").innerHTML = f3_en;
+                document.getElementById("second_route_sub_en").innerHTML = f3_time_plus1_en;
+                document.getElementById("third_route_en").innerHTML = f1_en;
+                document.getElementById("third_route_sub_en").innerHTML = f1_time_plus1_en;
+            }
+        }
     }
 
     function modifyNumber(time) {
